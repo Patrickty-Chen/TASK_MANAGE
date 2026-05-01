@@ -3,10 +3,10 @@
 // ============================================
 
 const driveConfig = {
-  // 請填入你的 Google API Key
-  apiKey: "AIzaSyDeDmBsrxOzmcdp_RfKblZ7TlH_OJcpCrQ",
+  // 您的 Google Drive API Key (請從 Google Cloud Console 取得)
+  apiKey: "AIzaSyCImVm-icMPQzxCAMBGDbVy2WJySO7_omk",
   
-  // 請填入你的 OAuth 用戶端 ID
+  // 您的 Google OAuth Client ID
   clientId: "853805693247-igt4sc63pkqnapdafg1fb1610ekjaq3m.apps.googleusercontent.com"
 };
 
