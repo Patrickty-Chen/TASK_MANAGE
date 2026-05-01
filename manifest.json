@@ -1,0 +1,16 @@
+{
+  "name": "艾森豪矩陣",
+  "short_name": "艾森豪矩陣",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#06060f",
+  "theme_color": "#06060f",
+  "description": "智能任務管理工具 - 用艾森豪矩陣幫你分清輕重緩急",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    }
+  ]
+}
