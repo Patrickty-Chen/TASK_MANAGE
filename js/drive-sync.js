@@ -39,6 +39,10 @@ const DriveSync = {
           App.showToast('❌ 登入失敗');
           return;
         }
+        
+        // 重要：必須將取得的 token 綁定到 gapi.client，否則 Drive API 請求會報 401
+        gapi.client.setToken({ access_token: tokenResponse.access_token });
+        
         this.isAuthenticated = true;
         this.fetchUserInfo(tokenResponse.access_token);
         this.syncWithDrive();
