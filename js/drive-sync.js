@@ -134,10 +134,29 @@ const DriveSync = {
       
       const driveTasks = response.result;
       if (Array.isArray(driveTasks)) {
-        App.tasks = driveTasks;
+        // 合併邏輯：保留本地原本有，但雲端沒有的任務
+        const localTasks = App.tasks || [];
+        const mergedTasks = [...driveTasks];
+        const driveTaskIds = new Set(driveTasks.map(t => t.id));
+        
+        let hasNewLocalTasks = false;
+        for (const localTask of localTasks) {
+          if (!driveTaskIds.has(localTask.id)) {
+            mergedTasks.push(localTask);
+            hasNewLocalTasks = true;
+          }
+        }
+        
+        App.tasks = mergedTasks;
         App.saveToLocalStorage(); // 快取到本地
         App.renderTasks();
         App.showToast('✅ 已從雲端同步');
+        
+        // 如果有合併本地任務，立刻上傳回雲端
+        if (hasNewLocalTasks) {
+          App.showToast('⬆️ 上傳本地任務中...');
+          this.saveTasksToDrive(App.tasks);
+        }
       }
     } catch (e) {
       console.error('Load Tasks Error:', e);
