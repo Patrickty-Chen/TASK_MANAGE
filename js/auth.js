@@ -22,6 +22,14 @@ const Auth = {
     loginBtn.addEventListener('click', () => this.signIn());
     logoutBtn.addEventListener('click', () => this.signOut());
     document.getElementById('syncBtn').addEventListener('click', () => DriveSync.syncWithDrive());
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      if (DriveSync.isAuthenticated) {
+        App.showToast('⬆️ 強制上傳存檔中...');
+        DriveSync.saveTasksToDrive(App.tasks);
+      } else {
+        App.showToast('⚠️ 請先登入 Google');
+      }
+    });
 
     // 啟動時先嘗試載入本地任務
     App.loadTasks();
