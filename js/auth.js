@@ -1,16 +1,14 @@
 // ============================================
-// Authentication Module
+// Authentication Module (Google Identity)
 // ============================================
 
 const Auth = {
-  currentUser: null,
-
   init() {
     const loginBtn = document.getElementById('loginBtn');
     const logoutBtn = document.getElementById('logoutBtn');
     const localBadge = document.getElementById('localBadge');
 
-    if (!isFirebaseConfigured) {
+    if (!isDriveConfigured) {
       // Local mode — hide login, show badge
       loginBtn.classList.add('hidden');
       localBadge.classList.remove('hidden');
@@ -18,48 +16,22 @@ const Auth = {
       return;
     }
 
-    // Firebase mode
+    // Drive mode
     loginBtn.classList.remove('hidden');
-
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        this.currentUser = user;
-        this.showUserInfo(user);
-        App.loadTasks();
-      } else {
-        this.currentUser = null;
-        this.showLoginButton();
-        // Still load tasks from localStorage as fallback
-        App.loadTasks();
-      }
-    });
 
     loginBtn.addEventListener('click', () => this.signIn());
     logoutBtn.addEventListener('click', () => this.signOut());
+
+    // 啟動時先嘗試載入本地任務
+    App.loadTasks();
   },
 
-  async signIn() {
-    if (!auth) return;
-    const provider = new firebase.auth.GoogleAuthProvider();
-    try {
-      await auth.signInWithPopup(provider);
-      App.showToast('✅ 登入成功！');
-    } catch (error) {
-      if (error.code !== 'auth/popup-closed-by-user') {
-        console.error('Login error:', error);
-        App.showToast('❌ 登入失敗，請再試一次');
-      }
-    }
+  signIn() {
+    DriveSync.signIn();
   },
 
-  async signOut() {
-    if (!auth) return;
-    try {
-      await auth.signOut();
-      App.showToast('👋 已登出');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  signOut() {
+    DriveSync.signOut();
   },
 
   showUserInfo(user) {

@@ -252,12 +252,12 @@ const App = {
       ]
     };
 
-    if (isFirebaseConfigured && Auth.currentUser) {
-      await this.saveToFirestore(task);
-    } else {
-      this.tasks.push(task);
-      this.saveToLocalStorage();
-      this.renderTasks();
+    this.tasks.push(task);
+    this.saveToLocalStorage();
+    this.renderTasks();
+    
+    if (DriveSync.isAuthenticated) {
+      DriveSync.saveTasksToDrive(this.tasks);
     }
 
     this.showToast('✅ 任務已新增');
@@ -386,11 +386,11 @@ const App = {
     if (!task.logs) task.logs = [];
     task.logs.push(...changes);
 
-    if (isFirebaseConfigured && Auth.currentUser) {
-      await this.saveToFirestore(task);
-    } else {
-      this.saveToLocalStorage();
-      this.renderTasks();
+    this.saveToLocalStorage();
+    this.renderTasks();
+
+    if (DriveSync.isAuthenticated) {
+      DriveSync.saveTasksToDrive(this.tasks);
     }
 
     this.showToast('✅ 任務已更新');
@@ -404,12 +404,12 @@ const App = {
       await new Promise(r => setTimeout(r, 400));
     }
 
-    if (isFirebaseConfigured && Auth.currentUser) {
-      await this.deleteFromFirestore(taskId);
-    } else {
-      this.tasks = this.tasks.filter(t => t.id !== taskId);
-      this.saveToLocalStorage();
-      this.renderTasks();
+    this.tasks = this.tasks.filter(t => t.id !== taskId);
+    this.saveToLocalStorage();
+    this.renderTasks();
+
+    if (DriveSync.isAuthenticated) {
+      DriveSync.saveTasksToDrive(this.tasks);
     }
     this.showToast('🎉 任務已完成！');
   },
@@ -421,59 +421,17 @@ const App = {
       await new Promise(r => setTimeout(r, 400));
     }
 
-    if (isFirebaseConfigured && Auth.currentUser) {
-      await this.deleteFromFirestore(taskId);
-    } else {
-      this.tasks = this.tasks.filter(t => t.id !== taskId);
-      this.saveToLocalStorage();
-      this.renderTasks();
+    this.tasks = this.tasks.filter(t => t.id !== taskId);
+    this.saveToLocalStorage();
+    this.renderTasks();
+
+    if (DriveSync.isAuthenticated) {
+      DriveSync.saveTasksToDrive(this.tasks);
     }
     this.showToast('🗑️ 任務已刪除');
   },
 
-  // --- Firestore ---
-
-  async saveToFirestore(task) {
-    if (!db || !Auth.currentUser) return;
-    try {
-      await db.collection('users').doc(Auth.currentUser.uid)
-        .collection('tasks').doc(task.id).set(task);
-    } catch (error) {
-      console.error('Save error:', error);
-      this.showToast('❌ 儲存失敗');
-    }
-  },
-
-  async deleteFromFirestore(taskId) {
-    if (!db || !Auth.currentUser) return;
-    try {
-      await db.collection('users').doc(Auth.currentUser.uid)
-        .collection('tasks').doc(taskId).delete();
-    } catch (error) {
-      console.error('Delete error:', error);
-      this.showToast('❌ 刪除失敗');
-    }
-  },
-
-  subscribeToFirestore() {
-    if (!db || !Auth.currentUser) return;
-
-    // Unsubscribe previous listener
-    if (this.firestoreUnsubscribe) {
-      this.firestoreUnsubscribe();
-    }
-
-    this.firestoreUnsubscribe = db.collection('users')
-      .doc(Auth.currentUser.uid)
-      .collection('tasks')
-      .orderBy('createdAt', 'desc')
-      .onSnapshot((snapshot) => {
-        this.tasks = snapshot.docs.map(doc => doc.data());
-        this.renderTasks();
-      }, (error) => {
-        console.error('Firestore listen error:', error);
-      });
-  },
+  // --- DriveSync & LocalStorage ---
 
   // --- LocalStorage ---
 
@@ -501,12 +459,9 @@ const App = {
   // --- Load Tasks (entry point) ---
 
   loadTasks() {
-    if (isFirebaseConfigured && Auth.currentUser) {
-      this.subscribeToFirestore();
-    } else {
-      this.loadFromLocalStorage();
-      this.renderTasks();
-    }
+    this.loadFromLocalStorage();
+    this.renderTasks();
+    // 如果未來登入後，會由 DriveSync 接管並覆蓋此處讀取的本地資料
   },
 
   // --- Render ---
@@ -659,11 +614,11 @@ const App = {
       newValue: `${subtask.title}: ${isCompleted ? '已完成' : '未完成'}`
     });
 
-    if (isFirebaseConfigured && Auth.currentUser) {
-      await this.saveToFirestore(task);
-    } else {
-      this.saveToLocalStorage();
-      this.renderTasks();
+    this.saveToLocalStorage();
+    this.renderTasks();
+
+    if (DriveSync.isAuthenticated) {
+      DriveSync.saveTasksToDrive(this.tasks);
     }
 
     this.showToast(`✨ 處理事項「${subtask.title}」已${isCompleted ? '完成' : '設為未完成'}`);
