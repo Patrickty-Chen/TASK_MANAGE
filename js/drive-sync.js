@@ -32,7 +32,7 @@ const DriveSync = {
     if (!isDriveConfigured) return;
     this.tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: driveConfig.clientId,
-      scope: 'https://www.googleapis.com/auth/drive.appdata',
+      scope: 'https://www.googleapis.com/auth/drive.appdata profile email',
       callback: (tokenResponse) => {
         if (tokenResponse && tokenResponse.error) {
           console.error('Token Error:', tokenResponse.error);
