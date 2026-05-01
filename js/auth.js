@@ -21,6 +21,7 @@ const Auth = {
 
     loginBtn.addEventListener('click', () => this.signIn());
     logoutBtn.addEventListener('click', () => this.signOut());
+    document.getElementById('syncBtn').addEventListener('click', () => DriveSync.syncWithDrive());
 
     // 啟動時先嘗試載入本地任務
     App.loadTasks();

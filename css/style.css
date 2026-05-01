@@ -223,6 +223,21 @@ body {
   background: rgba(255, 77, 106, 0.18);
 }
 
+.btn-sync {
+  padding: 5px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  background: rgba(52, 211, 153, 0.08);
+  color: #34d399;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: var(--font);
+}
+.btn-sync:hover {
+  background: rgba(52, 211, 153, 0.18);
+}
+
 /* --- Stats Bar --- */
 .stats-bar {
   position: relative;
