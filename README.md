@@ -26,7 +26,7 @@
 
 ```bash
 # 用 Python 啟動本地伺服器
-cd AI_TEST3
+cd TASK_MANAGE
 python3 -m http.server 8080
 
 # 打開瀏覽器訪問
